@@ -8,6 +8,7 @@ var markers = []
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
+  registerServiceWorker();
   fetchNeighborhoods();
   fetchCuisines();
 });
@@ -138,27 +139,37 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
 
+  const imgWrapper = document.createElement('div');
+  imgWrapper.className = 'restaurant-img-wrapper';
+  li.append(imgWrapper);
+
   const image = document.createElement('img');
   image.className = 'restaurant-img';
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
-  li.append(image);
+  image.alt = `Restaurant ${restaurant.name}`;
+  imgWrapper.append(image);
 
-  const name = document.createElement('h1');
+  const text = document.createElement('div');
+  text.className = 'restaurant-info';
+  li.append(text);
+
+  const name = document.createElement('h3');
   name.innerHTML = restaurant.name;
-  li.append(name);
+  text.append(name);
 
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;
-  li.append(neighborhood);
+  text.append(neighborhood);
 
   const address = document.createElement('p');
   address.innerHTML = restaurant.address;
-  li.append(address);
+  text.append(address);
 
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
+  more.setAttribute('aria-label', `View details about ${restaurant.name}`);
   more.href = DBHelper.urlForRestaurant(restaurant);
-  li.append(more)
+  text.append(more)
 
   return li
 }
@@ -176,3 +187,16 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
   });
 }
+
+registerServiceWorker = () => {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+    .then(function (reg) {
+      console.log('Registration worked! The scope is ', reg.scope);
+    }).catch(function (err) {
+      console.log('Registration failed with ', err);
+    });
+  } else {
+    console.log('There is no serviceWorker in this browser!');
+  }
+};
