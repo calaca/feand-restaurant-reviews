@@ -177,16 +177,19 @@ nav h1 a {
   list-style: outside none none;
   margin: 0;
   padding: 1em;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
 }
 
 #restaurants-list li {
   background-color: #fff;
   border: 2px solid #ccc;
   font-family: Arial,sans-serif;
-  margin: 15px 0;
+  margin: 2px 0;
   padding: 1em;
   text-align: left;
-  width: 100%;
+  width: 33%;
   display: flex;
   flex-flow: row wrap;
 }
@@ -339,7 +342,7 @@ nav h1 a {
   color: #666;
 }
 
-@media (max-width: 541px) {
+@media (max-width: 1365px) {
   #restaurants-list .restaurant-img-wrapper,
   #restaurants-list .restaurant-info {
     width: 100%;
@@ -351,7 +354,8 @@ nav h1 a {
   #restaurant-container,
   #reviews-container,
   #breadcrumb,
-  .inside #footer {
+  .inside #footer,
+  #restaurants-list li {
     width: 100%;
   }
 

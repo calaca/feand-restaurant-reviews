@@ -1,4 +1,4 @@
-let cacheName = 'v1';
+let cacheName = 'v1-04-04-18';
 const cacheFiles = [
   '/',
   '/index.html',
@@ -36,7 +36,7 @@ self.addEventListener('install', e => {
 });
 
 /**
- * You also get an activate event. This is a generally used to do stuff that would have broken the previous version while it was still running, for example getting rid of old caches. This is also useful for removing data that is no longer needed to avoid filling up too much disk space — each browser has a hard limit on the amount of cache storage that a given service worker can use. The browser does its best to manage disk space, but it may delete the Cache storage for an origin.  The browser will generally delete all of the data for an origin or none of the data for an origin.
+ * The activate event is a generally used to do stuff that would have broken the previous version while it was still running, for example getting rid of old caches. This is also useful for removing data that is no longer needed to avoid filling up too much disk space — each browser has a hard limit on the amount of cache storage that a given service worker can use. The browser does its best to manage disk space, but it may delete the Cache storage for an origin.  The browser will generally delete all of the data for an origin or none of the data for an origin.
  */
 self.addEventListener('activate', e => {
   console.log('serviceWorker activated!');
@@ -57,6 +57,7 @@ self.addEventListener('activate', e => {
 
 /**
  * A fetch event fires every time any resource controlled by a service worker is fetched, which includes the documents inside the specified scope, and any resources referenced in those documents (for example if index.html makes a cross origin request to embed an image, that still goes through its service worker.)
+ * NOTE: google maps are not cachable via service workers with current technology.
  */
 self.addEventListener('fetch', e => {
   console.log('serviceWorker is fetching content...');
@@ -67,31 +68,7 @@ self.addEventListener('fetch', e => {
           console.log('serviceWorker found content in cache!', res.url);
           return res;
         }
-
-        /**
-         * Cloning the response is necessary because request and response streams can only be read once.  In order to return the response to the browser and put it in the cache we have to clone it. So the original gets returned to the browser and the clone gets sent to the cache.  They are each read once.
-         */
-        // If there is no restaurant Google Maps image in cache and the user has internet connection, the Google Maps won't be loaded correctly and an error will show up in the console. Why?
-        fetch(e.request)
-          .then(response => {
-            if(!response) {
-              console.log('serviceWorker got no response from fetch.');
-              return response;
-            }
-            caches.open(cacheName).then(cache => {
-              cache.put(e.request, response.clone());
-              return response;
-            })
-            .catch(err => {
-              console.log('Error while saving new cache data with ', err);
-            });
-          })
-          .catch(err => {
-            console.log('Error while fetching external data with ', err);
-          });
-
-        // Works with no errors:
-        // return fetch(e.request);
+        return fetch(e.request);
       })
       .catch(err => {
         console.log('Error while fetching data with ', err);
@@ -99,4 +76,4 @@ self.addEventListener('fetch', e => {
   );
 });
 
-// https://developer.mozilla.org/pt-BR/docs/Web/API/Service_Worker_API/Using_Service_Workers
+// Resource: https://developer.mozilla.org/pt-BR/docs/Web/API/Service_Worker_API/Using_Service_Workers
